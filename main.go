@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 )
 
 var (
@@ -16,6 +18,7 @@ var (
 	outputPath   = "./outputs/"
 	sheetName    = "Sheet1"
 	scanKeywords = []string{"Exception"}
+	enc          = simplifiedchinese.GBK
 )
 
 func main() {
@@ -50,8 +53,10 @@ func main() {
 			keywordCounts[keyword] = 0
 		}
 
+		r := transform.NewReader(file, enc.NewDecoder())
+
 		// search count
-		scanner := bufio.NewScanner(file)
+		scanner := bufio.NewScanner(r)
 		for scanner.Scan() {
 			text := scanner.Text()
 			for _, keyword := range scanKeywords {
