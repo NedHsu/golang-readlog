@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -65,7 +66,13 @@ func main() {
 		for ri, record := range results {
 			for ci, col := range columns {
 				axis, _ := excelize.CoordinatesToCellName(ci+1, rowNum+ri+1)
-				CheckErr(fout.SetCellValue(sheetName, axis, record[col]))
+				v := record[col]
+				if i, ok := v.([]uint8); ok {
+					f, _ := strconv.ParseFloat(string(i), 64)
+					CheckErr(fout.SetCellFloat(sheetName, axis, f, 2, 64))
+				} else {
+					CheckErr(fout.SetCellValue(sheetName, axis, v))
+				}
 			}
 		}
 		rowNum += len(results)
